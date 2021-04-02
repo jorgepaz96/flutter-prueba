@@ -1,68 +1,50 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/pages/pageStatefull.dart';
-import 'package:flutter_application_1/pages/pageStateless.dart';
+import 'package:firebase_core/firebase_core.dart';
  
-void main() => runApp(MyApp());
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  Firebase.initializeApp().then((value) => {
+    runApp(MyApp())
+  });
+}
  
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  List usuarios = [];
+  @override
+  void initState() { 
+    super.initState();
+    getUsers();
+    
+  }
+  void getUsers() async{
+    CollectionReference collectionReference = FirebaseFirestore.instance.collection("users");
+    QuerySnapshot users = await collectionReference.get();
+    if (users.docs.length != 0) {
+      for (var doc in users.docs) {
+        print(doc.data());
+        usuarios.add(doc.data());
+      }
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Material App',
-      home: Home(),
-    );
-  }
-}
-
-class Home extends StatelessWidget {
-  const Home({
-    Key key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    TextEditingController _textController = TextEditingController(text: "");
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Material App Bar'),
-      ),
-      body: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.all(20),  
-            child: TextField(
-              controller: _textController,
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                fillColor: Colors.grey[300],
-                filled: true,
-                hintText: "Ingresa Informacion"
-              ),
-            )
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Material App Bar'),
+        ),
+        body: Center(
+          child: Container(
+            child: Text('Hello World'),
           ),
-          RaisedButton(
-            onPressed: (){
-              // print(_textController.text);
-              Navigator.push(
-                context, MaterialPageRoute(
-                builder: (builder) => PageStateless(_textController.text)
-                )
-              );
-            },
-            child: Text("Enviar a stateless"),
-          ),
-          RaisedButton(
-            onPressed: (){
-              // print(_textController.text);
-              Navigator.push(
-                context, MaterialPageRoute(
-                builder: (builder) => PageStatefull(_textController.text)
-                )
-              );
-            },
-            child: Text("Enviar a statefull"),
-          )
-        ],
+        ),
       ),
     );
   }
