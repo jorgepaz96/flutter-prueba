@@ -1,7 +1,6 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/pages/home.dart';
-import 'package:flutter_application_1/pages/our.dart';
-import 'package:flutter_application_1/pages/user.dart';
  
 void main() => runApp(MyApp());
  
@@ -11,38 +10,52 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  int _paginaActual = 0;
-  List<Widget> _paginas = [
-    PaginaHome(),
-    PaginaUser(),
-    PaginaOur(),
-  ];
+  double  _width = 100.0;
+  double  _height = 100.0;
+  Color _color = Colors.blue;
+  BorderRadius _borderRadius = BorderRadius.circular(10);
+
+  void _cambiarContainer(){
+    final random = Random();
+    _width = random.nextInt(350).toDouble();
+    _height = random.nextInt(350).toDouble();
+    _color = Color.fromRGBO(random.nextInt(255), random.nextInt(255), random.nextInt(255), 1);
+    _borderRadius = BorderRadius.circular(random.nextInt(50).toDouble());
+    setState(() {  });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Material App',
+      title: 'AnimatedContainer',
       home: Scaffold(
         appBar: AppBar(
           title: Text('Material App Bar'),
         ),
-        body: _paginas[_paginaActual],
-        bottomNavigationBar: BottomNavigationBar(
-          onTap: (index){
-            setState(() {
-                          _paginaActual = index;
-                        });
-          },
-          currentIndex: _paginaActual,
-          items: [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-            BottomNavigationBarItem(icon: Icon(Icons.supervised_user_circle), label: 'User'),
-            BottomNavigationBarItem(icon: Icon(Icons.verified_user_sharp), label: 'Our')
+        body: Column(
+          children: [
+            Expanded(
+              child: Center(
+                child: AnimatedContainer(
+                  duration: Duration(milliseconds: 500),
+                  curve: Curves.fastOutSlowIn,
+                  width: _width,
+                  height: _height,
+                  decoration: BoxDecoration(
+                    color: _color,
+                    borderRadius: _borderRadius
+                  ),
+                ),
+              ),
+            ),
+            RaisedButton(
+              onPressed:_cambiarContainer,
+              child: Text("Cambiar container"),
+            )
           ],
         ),
       ),
     );
   }
 }
-
-
