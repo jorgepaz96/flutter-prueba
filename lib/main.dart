@@ -1,53 +1,68 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:flutter_application_1/pages/pageStatefull.dart';
+import 'package:flutter_application_1/pages/pageStateless.dart';
+ 
 void main() => runApp(MyApp());
  
-class MyApp extends StatefulWidget {
-  @override
-  _MyAppState createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  int value = 0;
-  _changeValue()async{
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      value = value + 1;
-      prefs.setInt("value", value);
-    });
-  }
-  @override
-  void initState() { 
-    super.initState();
-    _cargarPreferencias();
-  }
-  _cargarPreferencias()async{
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      value = prefs.getInt("value") ?? 0;
-    });
-  }
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
       title: 'Material App',
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Preferences'),
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                child: Text(value.toString(), style: TextStyle(fontSize: 50),),
+      home: Home(),
+    );
+  }
+}
+
+class Home extends StatelessWidget {
+  const Home({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    TextEditingController _textController = TextEditingController(text: "");
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Material App Bar'),
+      ),
+      body: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.all(20),  
+            child: TextField(
+              controller: _textController,
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                fillColor: Colors.grey[300],
+                filled: true,
+                hintText: "Ingresa Informacion"
               ),
-              FlatButton(onPressed: _changeValue, child: Text("Aumentar valor"))
-            ],
+            )
           ),
-        ),
+          RaisedButton(
+            onPressed: (){
+              // print(_textController.text);
+              Navigator.push(
+                context, MaterialPageRoute(
+                builder: (builder) => PageStateless(_textController.text)
+                )
+              );
+            },
+            child: Text("Enviar a stateless"),
+          ),
+          RaisedButton(
+            onPressed: (){
+              // print(_textController.text);
+              Navigator.push(
+                context, MaterialPageRoute(
+                builder: (builder) => PageStatefull(_textController.text)
+                )
+              );
+            },
+            child: Text("Enviar a statefull"),
+          )
+        ],
       ),
     );
   }
