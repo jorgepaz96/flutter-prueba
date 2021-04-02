@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/pages/pagina02.dart';
 
 void main() => runApp(MiApp());
 
@@ -19,27 +18,61 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+
+  bool _subscrito = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text("Mi app"),),
+        appBar: AppBar(title: Text("Alert Dialog"),),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("home"),
               RaisedButton(
-                child: Text("Ir a la otra pagina"),
-                onPressed: ()=>{
-                  Navigator.push(
-                    context, 
-                    MaterialPageRoute(builder: (context)=>Pagina02())
-                  )
+                color: Colors.blue,
+                textColor: Colors.white,
+                child: Text("Suscribirme a este canala", style: TextStyle(fontSize: 20),),
+                onPressed: (){
+                  _mostrarAlerta(context);
                 },
-              )
+              ),
+              SizedBox(height: 100,),
+              Text(_subscrito? "Subscrito" : "No subscrito", style: TextStyle(fontSize: 20),)
             ],
           ),
         )
       );
   }
+  void _mostrarAlerta(BuildContext context){
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (_) => new AlertDialog(
+          title: new Text("Hola"),
+          content: new Text(_subscrito? "Quieres desjar de seguir este canal?":"Quieres suscribirte?"),
+          actions: <Widget>[
+            TextButton(
+              child: Text("Cancelar"),
+              onPressed: (){
+                print("No");
+                
+                Navigator.pop(context);
+              },
+            ),
+            TextButton(
+              child: Text("Si quiero!"),
+              onPressed: (){
+                print("Si");
+                setState(() {
+                  _subscrito = !_subscrito;
+                });
+                Navigator.pop(context);
+              },
+            ),
+            
+          ],
+        ));
+  }
 }
+
