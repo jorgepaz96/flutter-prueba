@@ -1,8 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/models/Gif.dart';
-import 'package:http/http.dart' as http; 
+import 'package:flutter_application_1/pages/home.dart';
+import 'package:flutter_application_1/pages/our.dart';
+import 'package:flutter_application_1/pages/user.dart';
  
 void main() => runApp(MyApp());
  
@@ -12,70 +11,38 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  
-  Future<List<Gif>> _listadoGifs;
-
-  Future<List<Gif>> _getGifs() async{
-    final response = await http.get(Uri.https("api.giphy.com", '/v1/gifs/trending', {'api_key' : '10qznyNOQ4HHdQfBqvBMJBQzNQu40GWl','limit':'10','rating':'g'}));
-    List<Gif> gifs = [];
-    if (response.statusCode == 200) {
-      String body = utf8.decode(response.bodyBytes);
-      final jsonData = jsonDecode(body);      
-      for (var item in jsonData["data"]) {        
-        gifs.add(
-          Gif(item["title"],item["images"]["downsized"]["url"])
-        );
-      }
-      return gifs;
-    }else{
-      throw Exception("Falló la conexión");
-    }
-  }
-  @override
-  void initState() { 
-    super.initState();
-    _listadoGifs =  _getGifs();
-  }
+  int _paginaActual = 0;
+  List<Widget> _paginas = [
+    PaginaHome(),
+    PaginaUser(),
+    PaginaOur(),
+  ];
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Material App',
       home: Scaffold(
         appBar: AppBar(
           title: Text('Material App Bar'),
         ),
-        body: FutureBuilder(
-          future: _listadoGifs,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {              
-              return GridView.count(
-                crossAxisCount: 2,
-                children: listGifs(snapshot.data),
-              );
-            }else if (snapshot.hasError){
-              print(snapshot.error);
-              return Text("aioz");
-            }
-            return Center(
-              child: CircularProgressIndicator(),
-            );
+        body: _paginas[_paginaActual],
+        bottomNavigationBar: BottomNavigationBar(
+          onTap: (index){
+            setState(() {
+                          _paginaActual = index;
+                        });
           },
-        )
+          currentIndex: _paginaActual,
+          items: [
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+            BottomNavigationBarItem(icon: Icon(Icons.supervised_user_circle), label: 'User'),
+            BottomNavigationBarItem(icon: Icon(Icons.verified_user_sharp), label: 'Our')
+          ],
+        ),
       ),
     );
   }
-
-  List<Widget> listGifs(List<Gif> data) {
-    List<Widget> gifs = [];
-    for (var gif in data) {
-      gifs.add(
-        Card(child: Column(
-          children: [
-            Expanded(child: Image.network(gif.url,fit: BoxFit.fill,))            
-          ],
-        ))
-      );
-    }
-    return gifs;
-  }
 }
+
+
